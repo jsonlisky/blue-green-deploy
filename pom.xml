@@ -1,0 +1,281 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>blue-green-deploy</groupId>
+    <artifactId>blue-green-deploy</artifactId>
+    <packaging>pom</packaging>
+    <version>1.0-SNAPSHOT</version>
+    <modules>
+        <module>api-gateway</module>
+        <module>eureka</module>
+    </modules>
+
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>1.5.22.RELEASE</version>
+    </parent>
+
+    <properties>
+        <spring.version>4.3.25.RELEASE</spring.version>
+        <spring.cloud.version>Edgware.SR6</spring.cloud.version>
+        <spring.cloud.starter.hystrix.version>1.4.7.RELEASE</spring.cloud.starter.hystrix.version>
+        <spring.cloud.starter.feign.version>1.4.7.RELEASE</spring.cloud.starter.feign.version>
+        <spring.cloud.starter.eureka.version>1.4.7.RELEASE</spring.cloud.starter.eureka.version>
+        <spring.boot.starter.web.version>1.5.22.RELEASE</spring.boot.starter.web.version>
+        <spring.boot.starter.undertow.version>1.5.22.RELEASE</spring.boot.starter.undertow.version>
+        <spring.boot.starter.fastjson.version>2.0.0</spring.boot.starter.fastjson.version>
+        <spring.graceful.shutdown.version>1.0.3-RELEASE</spring.graceful.shutdown.version>
+        <apollo-client.version>1.0.1-RELEASE</apollo-client.version>
+
+        <tomcat.embed.core.version>8.5.16</tomcat.embed.core.version>
+        <mybatis.spring.boot.starter.version>1.2.1</mybatis.spring.boot.starter.version>
+        <mytatis.version>3.4.4</mytatis.version>
+
+        <druid.version>1.0.31</druid.version>
+        <mysql.connector.version>5.1.24</mysql.connector.version>
+        <postgresql.connector.version>42.1.1</postgresql.connector.version>
+        <log4j2.version>2.11.2</log4j2.version>
+
+        <jedis.version>2.9.0</jedis.version>
+        <gcrm-redis.version>0.0.8-RELEASE</gcrm-redis.version>
+        <gcrm-mq.version>0.0.7-RELEASE</gcrm-mq.version>
+        <gcrm-job.version>1.1.1-RELEASE</gcrm-job.version>
+        <java-util.version>1.1.9-RELEASE</java-util.version>
+
+        <git.commit.id.plugin.version>2.1.13</git.commit.id.plugin.version>
+        <docker.maven.plugin.version>1.0.0</docker.maven.plugin.version>
+        <githook.maven.plugin.version>1.0.3</githook.maven.plugin.version>
+        <apidocjs.maven.plugin.version>1.0.7</apidocjs.maven.plugin.version>
+
+        <java.version>1.8</java.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <org.slf4j.version>1.7.24</org.slf4j.version>
+        <yaml.version>1.13</yaml.version>
+        <org.apache.poi.version>3.13</org.apache.poi.version>
+        <thumbnailator.version>0.4.8</thumbnailator.version>
+    </properties>
+
+    <profiles>
+        <profile>
+            <id>local</id>
+            <properties>
+                <env>local</env>
+                <gendoc>false</gendoc>
+                <docker.image.suffix>latest</docker.image.suffix>
+                <docker.skipPush>true</docker.skipPush>
+            </properties>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+        </profile>
+        <profile>
+            <id>online</id>
+            <properties>
+                <env>online</env>
+                <gendoc>true</gendoc>
+                <docker.image.suffix>latest</docker.image.suffix>
+                <docker.skipPush>false</docker.skipPush>
+            </properties>
+        </profile>
+    </profiles>
+
+    <!-- dependencies标签中的依赖会被子项目完全继承：即父项目中有的依赖都会出现在子项目中 -->
+    <dependencies>
+        
+    </dependencies>
+
+    <!-- 依赖管理中声明的依赖并不会被子项目直接继承，在子项目中需要声明，但是只需要声明groupId和artifactId -->
+    <dependencyManagement>
+        <dependencies>
+            <!-- import工程依赖管理，解决单parent问题 -->
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-dependencies</artifactId>
+                <version>${spring.cloud.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <!--服务发现-->
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-starter-eureka</artifactId>
+                <version>${spring.cloud.starter.eureka.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.springframework.boot</groupId>
+                        <artifactId>spring-boot-starter-tomcat</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-starter-netflix-eureka-server</artifactId>
+                <version>${spring.cloud.starter.eureka.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-undertow</artifactId>
+                <version>${spring.boot.starter.undertow.version}</version>
+                <scope>compile</scope>
+            </dependency>
+            <!--熔断器-->
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-starter-hystrix</artifactId>
+                <version>${spring.cloud.starter.hystrix.version}</version>
+            </dependency>
+            <!--Feign客户端-->
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-starter-feign</artifactId>
+                <version>${spring.cloud.starter.feign.version}</version>
+            </dependency>
+            <!--网页相关-->
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-web</artifactId>
+                <version>${spring.boot.starter.web.version}</version>
+            </dependency>
+            <!--fastjson整合-->
+            <dependency>
+                <groupId>com.ruijc</groupId>
+                <artifactId>spring-boot-starter-fastjson</artifactId>
+                <version>${spring.boot.starter.fastjson.version}</version>
+            </dependency>
+            <!--优雅停机-->
+            <dependency>
+                <groupId>com.gs.gcrm</groupId>
+                <artifactId>spring-cloud-starter-graceful-shutdown</artifactId>
+                <version>${spring.graceful.shutdown.version}</version>
+            </dependency>
+
+            <!-- tomcat -->
+            <dependency>
+                <groupId>org.apache.tomcat.embed</groupId>
+                <artifactId>tomcat-embed-core</artifactId>
+                <version>${tomcat.embed.core.version}</version>
+                <scope>provided</scope>
+            </dependency>
+
+            <!-- spring -->
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-web</artifactId>
+                <version>${spring.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-core</artifactId>
+                <version>${spring.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-webmvc</artifactId>
+                <version>${spring.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-jdbc</artifactId>
+                <version>${spring.version}</version>
+            </dependency>
+
+            <!-- apollo -->
+            <dependency>
+                <groupId>com.ctrip.framework.apollo</groupId>
+                <artifactId>apollo-client</artifactId>
+                <version>${apollo-client.version}</version>
+            </dependency>
+
+            <!-- redis -->
+            <dependency>
+                <groupId>redis.clients</groupId>
+                <artifactId>jedis</artifactId>
+                <version>${jedis.version}</version>
+            </dependency>
+
+            <!-- druid -->
+            <dependency>
+                <groupId>com.alibaba</groupId>
+                <artifactId>druid</artifactId>
+                <version>${druid.version}</version>
+            </dependency>
+
+            <!-- PG -->
+            <dependency>
+                <groupId>org.postgresql</groupId>
+                <artifactId>postgresql</artifactId>
+                <version>${postgresql.connector.version}</version>
+            </dependency>
+
+            <!-- mybatis spring -->
+            <dependency>
+                <groupId>org.mybatis.spring.boot</groupId>
+                <artifactId>mybatis-spring-boot-starter</artifactId>
+                <version>${mybatis.spring.boot.starter.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.apache.tomcat</groupId>
+                        <artifactId>tomcat-jdbc</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+
+            <!-- excel poi -->
+            <dependency>
+                <groupId>org.apache.poi</groupId>
+                <artifactId>poi-ooxml</artifactId>
+                <version>${org.apache.poi.version}</version>
+            </dependency>
+
+            <!--日志-->
+            <dependency>
+                <groupId>org.apache.logging.log4j</groupId>
+                <artifactId>log4j-core</artifactId>
+                <version>${log4j2.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.logging.log4j</groupId>
+                <artifactId>log4j-api</artifactId>
+                <version>${log4j2.version}</version>
+            </dependency>
+
+        </dependencies>
+    </dependencyManagement>
+
+    <build>
+        <!-- 插件管理，可供子项目继承 -->
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>pl.project13.maven</groupId>
+                    <artifactId>git-commit-id-plugin</artifactId>
+                    <version>${git.commit.id.plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>com.spotify</groupId>
+                    <artifactId>docker-maven-plugin</artifactId>
+                    <version>${docker.maven.plugin.version}</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+
+        <plugins>
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
+                    <encoding>${project.build.sourceEncoding}</encoding>
+                    <optimize>true</optimize>
+                    <debug>false</debug>
+                    <showDeprecation>true</showDeprecation>
+                    <showWarnings>false</showWarnings>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>
