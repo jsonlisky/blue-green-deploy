@@ -1,0 +1,12 @@
+spring:
+  application:
+    name: api-gateway
+  mvc:
+    dispatch-options-request: true # 关闭跨域
+
+eureka:
+  instance:
+    preferIpAddress: true
+  client:
+    serviceUrl:
+      defaultZone: ${EUREKA_SERVICE_URL:http://127.0.0.1:8761/eureka/}

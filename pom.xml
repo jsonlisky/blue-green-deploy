@@ -23,6 +23,7 @@
         <spring.version>4.3.25.RELEASE</spring.version>
         <spring.cloud.version>Edgware.SR6</spring.cloud.version>
         <spring.cloud.starter.hystrix.version>1.4.7.RELEASE</spring.cloud.starter.hystrix.version>
+        <spring.cloud.starter.ribbon.version>1.4.7.RELEASE</spring.cloud.starter.ribbon.version>
         <spring.cloud.starter.feign.version>1.4.7.RELEASE</spring.cloud.starter.feign.version>
         <spring.cloud.starter.eureka.version>1.4.7.RELEASE</spring.cloud.starter.eureka.version>
         <spring.boot.starter.web.version>1.5.22.RELEASE</spring.boot.starter.web.version>
@@ -128,6 +129,12 @@
                 <artifactId>spring-cloud-starter-hystrix</artifactId>
                 <version>${spring.cloud.starter.hystrix.version}</version>
             </dependency>
+            <!--负载均衡-->
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-starter-ribbon</artifactId>
+                <version>${spring.cloud.starter.ribbon.version}</version>
+            </dependency>
             <!--Feign客户端-->
             <dependency>
                 <groupId>org.springframework.cloud</groupId>
@@ -146,13 +153,6 @@
                 <artifactId>spring-boot-starter-fastjson</artifactId>
                 <version>${spring.boot.starter.fastjson.version}</version>
             </dependency>
-            <!--优雅停机-->
-            <dependency>
-                <groupId>com.gs.gcrm</groupId>
-                <artifactId>spring-cloud-starter-graceful-shutdown</artifactId>
-                <version>${spring.graceful.shutdown.version}</version>
-            </dependency>
-
             <!-- tomcat -->
             <dependency>
                 <groupId>org.apache.tomcat.embed</groupId>
